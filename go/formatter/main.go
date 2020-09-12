@@ -45,10 +45,10 @@ func handleFormatGretting(w http.ResponseWriter, r *http.Request) {
 
 func FormatGreeting(
   ctx context.Context,
-  name, title, descritption string) {
+  name, title, descritption string) string {
     span, ctx := opentracing.StartSpanFromContext(
       ctx,
-      "format-greeting"
+      "format-greeting",
     )
     defer span.Finish()
 
@@ -56,7 +56,7 @@ func FormatGreeting(
     if greeting == "" {
       greeting = "Hello"
     }
-    response := greeting + " ",
+    response := greeting + " "
     if descritption != "" {
       response += " " + descritption
     }

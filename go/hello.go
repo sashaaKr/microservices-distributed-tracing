@@ -10,6 +10,7 @@ import (
 
   "github.com/opentracing-contrib/go-stdlib/nethttp"
   opentracing "github.com/opentracing/opentracing-go"
+  ottag "github.com/opentracing/opentracing-go/ext"
   otlog "github.com/opentracing/opentracing-go/log"
 
   "github.com/sashaaKr/microservices-distributed-tracing/go/lib/http"
@@ -25,14 +26,14 @@ func main() {
   opentracing.SetGlobalTracer(tracer)
 
   http.HandleFunc("/sayHello", handleSayHello)
-  log.Pring("Listening on http://localhost:8080/")
+  log.Print("Listening on http://localhost:8080/")
   log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func handleSayHello(w http.ResponseWriter, r *http.Request) {
   spanCtx, _ := opentracing.GlobalTracer().Extract(
     opentracing.HTTPHeaders,
-    opentracing.HTTPHeadersCarrier(r.Headers),
+    opentracing.HTTPHeadersCarrier(r.Header),
   )
   span := opentracing.GlobalTracer().StartSpan(
     "say-hello",
@@ -54,7 +55,7 @@ func handleSayHello(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte(greeting))
 }
 
-func Sayn(ctx context.Context, name string) (string, error) {
+func SayHello(ctx context.Context, name string) (string, error) {
   person, err := getPerson(ctx, name)
   if err != nil {
     return "", err
@@ -84,7 +85,7 @@ func formatGreeting(
 ) (string, error) {
   v := url.Values{}
   v.Set("name", person.Name)
-  v.Set("title". person.Title)
+  v.Set("title", person.Title)
   v.Set("desctiption", person.Description)
   url := "http://localhost:8082/formatGreeting?" + v.Encode()
   res, err := get(ctx, "formatGreeting", url)
@@ -105,7 +106,7 @@ func get(ctx context.Context, operationName, url string) ([]byte, error) {
 
   ottag.SpanKindRPCClient.Set(span)
   ottag.HTTPUrl.Set(span, url)
-  ottag.HTTPMethod(span, "GET")
+  ottag.HTTPMethod.Set(span, "GET")
   opentracing.GlobalTracer().Inject(
     span.Context(),
     opentracing.HTTPHeaders,

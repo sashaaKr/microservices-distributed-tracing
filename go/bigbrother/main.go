@@ -1,50 +1,62 @@
 package main
 
 import (
-  "encoding/json"
-  "log"
-  "net/http"
-  "strings"
+	"encoding/json"
+	"log"
+	"net/http"
+	"strings"
 
-  opentracing "github.com/opentracing/opentracing-go"
-  otlog "github.com/opentracing/opentracing-go/log"
-  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/tracing"
-  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/people"
+	opentracing "github.com/opentracing/opentracing-go"
+	otlog "github.com/opentracing/opentracing-go/log"
+
+	"github.com/sashaaKr/microservices-distributed-tracing/go/people"
+	"github.com/sashaaKr/microservices-distributed-tracing/go/lib/tracing"
 )
 
 var repo *people.Repository
 
 func main() {
-  tracer, closer := tracing.Init("bigbrother")
-  defer closer.Close()
-  opentracing.SetGlobalTracer(tracer)
+	tracer, closer := tracing.Init("go-5-bigbrother")
+	defer closer.Close()
+	opentracing.SetGlobalTracer(tracer)
 
-  repo = people.NewRepository()
-  defer repo.Close()
+	repo = people.NewRepository()
+	defer repo.Close()
 
-  http.HandleFunc("/getPerson/", handleGetPerson)
+	http.HandleFunc("/getPerson/", handleGetPerson)
 
-  log.Pring("Listening on http://localhost:8081/")
-  log.Fatal(http.ListenAndServe(":8081", nil))
+	log.Print("Listening on http://localhost:8081/")
+	log.Fatal(http.ListenAndServe(":8081", nil))
 }
 
 func handleGetPerson(w http.ResponseWriter, r *http.Request) {
-  spanCtx, _ := opentracing.GlobalTracer().Extract(
-    opentracing.HTTPHeaders,
-    opentracing.HTTPHeadersCarrier(r.Header),
-  )
-  span := opentracing.GlobalTracer().StartSpan(
-    "/getPerson",
-    opentracing.ChildOd(spanCtx),
-  )
-  defer span.Finish()
+	spanCtx, _ := opentracing.GlobalTracer().Extract(
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(r.Header),
+	)
+	span := opentracing.GlobalTracer().StartSpan(
+		"/getPerson",
+		opentracing.ChildOf(spanCtx),
+	)
+	defer span.Finish()
 
-  ctx := opentracing.ContextWithSpan(r.Context, span)
+	ctx := opentracing.ContextWithSpan(r.Context(), span)
 
-  name := strings.TrimPrefix(r.URL.Path, "/getPerson/")
-  person, err := repo.GetPerson(ctx, name)
-  if err != nil {
-  }
+	name := strings.TrimPrefix(r.URL.Path, "/getPerson/")
+	person, err := repo.GetPerson(ctx, name)
+	if err != nil {
+		span.SetTag("error", true)
+		span.LogFields(otlog.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
+	span.LogKV(
+		"name", person.Name,
+		"title", person.Title,
+		"description", person.Description,
+	)
+
+	bytes, _ := json.Marshal(person)
+	w.Write(bytes)
 }
-
