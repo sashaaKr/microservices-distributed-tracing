@@ -25,7 +25,7 @@ func main() {
   defer closer.Close()
   opentracing.SetGlobalTracer(tracer)
 
-  http.HandleFunc("/sayHello", handleSayHello)
+  http.HandleFunc("/sayHello/", handleSayHello)
   log.Print("Listening on http://localhost:8080/")
   log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -42,7 +42,7 @@ func handleSayHello(w http.ResponseWriter, r *http.Request) {
   defer span.Finish()
   ctx := opentracing.ContextWithSpan(r.Context(), span)
 
-  name := strings.TrimPrefix(r.URL.Path, "/sayHello")
+  name := strings.TrimPrefix(r.URL.Path, "/sayHello/")
   greeting, err := SayHello(ctx, name)
   if err != nil {
     span.SetTag("error", true)
@@ -65,7 +65,7 @@ func SayHello(ctx context.Context, name string) (string, error) {
 }
 
 func getPerson(ctx context.Context, name string) (*model.Person, error) {
-  url := "http://localhost:8081/getPerson" + name
+  url := "http://localhost:8081/getPerson/" + name
   res, err := get(ctx, "getPerson", url)
   if err != nil {
     return nil, err
@@ -86,7 +86,7 @@ func formatGreeting(
   v := url.Values{}
   v.Set("name", person.Name)
   v.Set("title", person.Title)
-  v.Set("desctiption", person.Description)
+  v.Set("description", person.Description)
   url := "http://localhost:8082/formatGreeting?" + v.Encode()
   res, err := get(ctx, "formatGreeting", url)
   if err != nil {

@@ -16,7 +16,7 @@ import (
 var repo *people.Repository
 
 func main() {
-	tracer, closer := tracing.Init("go-5-bigbrother")
+	tracer, closer := tracing.Init("bigbrother")
 	defer closer.Close()
 	opentracing.SetGlobalTracer(tracer)
 

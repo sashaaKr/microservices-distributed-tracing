@@ -37,28 +37,37 @@ func handleFormatGretting(w http.ResponseWriter, r *http.Request) {
 
   name := r.FormValue("name")
   title := r.FormValue("title")
-  descr := r.FormValue("descritption")
-
+  descr := r.FormValue("description")
+  span.LogKV(
+    "name", name,
+    "title", title,
+    "description", descr,
+  )
   greeting := FormatGreeting(ctx, name, title, descr)
   w.Write([]byte(greeting))
 }
 
 func FormatGreeting(
-  ctx context.Context,
-  name, title, descritption string) string {
-    span, ctx := opentracing.StartSpanFromContext(
-      ctx,
-      "format-greeting",
-    )
-    defer span.Finish()
+	ctx context.Context,
+	name, title, description string,
+) string {
+	span, ctx := opentracing.StartSpanFromContext(
+		ctx,
+		"format-greeting",
+	)
+	defer span.Finish()
 
-    greeting := span.BaggageItem("greeting")
-    if greeting == "" {
-      greeting = "Hello"
-    }
-    response := greeting + " "
-    if descritption != "" {
-      response += " " + descritption
-    }
-    return response
-  }
+	greeting := span.BaggageItem("greeting")
+	if greeting == "" {
+		greeting = "Hello"
+	}
+	response := greeting + ", "
+	if title != "" {
+		response += title + " "
+	}
+	response += name + "!"
+	if description != "" {
+		response += " " + description
+	}
+	return response
+}

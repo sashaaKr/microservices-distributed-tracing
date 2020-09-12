@@ -11,7 +11,7 @@ import (
 	"github.com/sashaaKr/microservices-distributed-tracing/go/lib/model"
 )
 
-const dburl = "root:mysqlpwd@tcp(127.0.0.1:3306)/chapter04"
+const dburl = "root:mysqlpwd@tcp(127.0.0.1:3306)/disributedTracingApp"
 
 // Repository retrieves information about people.
 type Repository struct {
