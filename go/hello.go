@@ -12,9 +12,9 @@ import (
   opentracing "github.com/opentracing/opentracing-go"
   otlog "github.com/opentracing/opentracing-go/log"
 
-  "github.com/microservices-distributed-tracing/go/lib/http"
-  "github.com/microservices-distributed-tracing/go/lib/model"
-  "github.com/microservices-distributed-tracing/go/lib/tracing"
+  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/http"
+  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/model"
+  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/tracing"
 )
 
 var clinet = &http.Client{Transport: &nethttp.Transport{}}

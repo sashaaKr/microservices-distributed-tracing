@@ -8,8 +8,8 @@ import (
 
   opentracing "github.com/opentracing/opentracing-go"
   otlog "github.com/opentracing/opentracing-go/log"
-  "github.com/ssashkr/microservices-distributed-tracing/go/lib/tracing"
-  "github.com/ssashkr/microservices-distributed-tracing/go/lib/people"
+  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/tracing"
+  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/people"
 )
 
 var repo *people.Repository

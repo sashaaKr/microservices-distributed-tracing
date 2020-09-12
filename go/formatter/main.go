@@ -8,7 +8,7 @@ import (
   opentracing "github.com/opentracing/opentracing-go"
   ottag "github.com/opentracing/opentracing-go/ext"
 
-  "github.com/ssashkr/microservices-distributed-tracing/go/lib/tracing"
+  "github.com/sashaaKr/microservices-distributed-tracing/go/lib/tracing"
 )
 
 func main() {
