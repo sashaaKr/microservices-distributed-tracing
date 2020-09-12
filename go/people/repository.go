@@ -7,7 +7,7 @@ import (
   _ "github.com/go-sql-driver/mysql"
   opentracing "github.com/opentracing/opentracing-go"
 
-  "github.com/sashakr/microservices-distributed-tracing/lib/model"
+  "github.com/sashaaKr/microservices-distributed-tracing/lib/model"
 )
 
 const dbUrl = "root:mysqlpwd@tcp(127.0.0.1:3306/people"
