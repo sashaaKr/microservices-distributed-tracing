@@ -23,13 +23,13 @@ func main() {
 }
 
 func handleFormatGretting(w http.ResponseWriter, r *http.Request) {
-  spanCtx, _ := opentracing.GlobalTracer().Extract(
+  rootSpan, _ := opentracing.GlobalTracer().Extract(
     opentracing.HTTPHeaders,
     opentracing.HTTPHeadersCarrier(r.Header),
   )
   span := opentracing.GlobalTracer().StartSpan(
     "/formatGreeting",
-    ottag.RPCServerOption(spanCtx),
+    ottag.RPCServerOption(rootSpan),
   )
   defer span.Finish()
 

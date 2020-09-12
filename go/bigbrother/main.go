@@ -30,13 +30,13 @@ func main() {
 }
 
 func handleGetPerson(w http.ResponseWriter, r *http.Request) {
-	spanCtx, _ := opentracing.GlobalTracer().Extract(
+	rootSpan, _ := opentracing.GlobalTracer().Extract(
 		opentracing.HTTPHeaders,
 		opentracing.HTTPHeadersCarrier(r.Header),
 	)
 	span := opentracing.GlobalTracer().StartSpan(
 		"/getPerson",
-		opentracing.ChildOf(spanCtx),
+		opentracing.ChildOf(rootSpan),
 	)
 	defer span.Finish()
 

@@ -1,4 +1,6 @@
 # microservices-distributed-tracing
+Inspired by: https://learning.oreilly.com/library/view/mastering-distributed-tracing/9781788628464/
+
 
 ## Getting started
 
@@ -22,5 +24,7 @@ docker run -d --name jaeger \
     -p 14268:14268 \
     jaegertracing/all-in-one:1.6
 
+chmod +x ./start.sh
+./start.sh
 curl http://localhost:8080/sayHello/Nefario
 ```
